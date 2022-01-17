@@ -240,7 +240,91 @@
 	::veg::Vec<unsigned char> LDLT_ID(stack_storage);                            \
 	LDLT_ID(stack_storage)                                                       \
 			.resize_for_overwrite(::veg::dynstack::StackReq{(StackR)}.alloc_req());  \
-	auto Name /* NOLINT */ =                                                     \
+	auto(Name) /* NOLINT */ =                                                    \
 			::veg::dynstack::DynStackMut{LDLT_ID(stack_storage).as_mut()};
+
+#define LDLT_TEMP_VEC(Type, Name, Rows, Stack)                                 \
+	auto LDLT_ID(vec_storage) =                                                  \
+			(Stack)                                                                  \
+					.make_new(                                                           \
+							::veg::Tag<__VEG_PP_REMOVE_PAREN(Type)>{},                       \
+							(Rows),                                                          \
+							::ldlt::detail::_align<__VEG_PP_REMOVE_PAREN(Type)>())           \
+					.unwrap();                                                           \
+	auto(Name) /* NOLINT */ = ::Eigen::Map<                                      \
+			::Eigen::Matrix<__VEG_PP_REMOVE_PAREN(Type), ::Eigen::Dynamic, 1>>{      \
+			LDLT_ID(vec_storage).ptr_mut(),                                          \
+			LDLT_ID(vec_storage).len(),                                              \
+	};                                                                           \
+	static_assert(true, ".")
+
+#define LDLT_TEMP_MAT(Type, Name, Rows, Cols, Stack)                           \
+	::veg::isize LDLT_ID(rows) = (Rows);                                         \
+	::veg::isize LDLT_ID(cols) = (Cols);                                         \
+	auto LDLT_ID(vec_storage) =                                                  \
+			(Stack)                                                                  \
+					.make_new(                                                           \
+							::veg::Tag<__VEG_PP_REMOVE_PAREN(Type)>{},                       \
+							::ldlt::detail::_adjusted_stride<__VEG_PP_REMOVE_PAREN(Type)>(   \
+									LDLT_ID(rows)) *                                             \
+									LDLT_ID(cols),                                               \
+							::ldlt::detail::_align<__VEG_PP_REMOVE_PAREN(Type)>())           \
+					.unwrap();                                                           \
+	auto(Name) /* NOLINT */ = ::Eigen::Map<                                      \
+			::Eigen::Matrix<                                                         \
+					__VEG_PP_REMOVE_PAREN(Type),                                         \
+					::Eigen::Dynamic,                                                    \
+					::Eigen::Dynamic,                                                    \
+					::Eigen::ColMajor>,                                                  \
+			::Eigen::Unaligned,                                                      \
+			::Eigen::OuterStride<::Eigen::Dynamic>>{                                 \
+			LDLT_ID(vec_storage).ptr_mut(),                                          \
+			LDLT_ID(rows),                                                           \
+			LDLT_ID(cols),                                                           \
+			::Eigen::OuterStride<::Eigen::Dynamic>{LDLT_ID(rows)},                   \
+	};                                                                           \
+	static_assert(true, ".")
+
+#define LDLT_TEMP_VEC_UNINIT(Type, Name, Rows, Stack)                          \
+	auto LDLT_ID(vec_storage) =                                                  \
+			(Stack)                                                                  \
+					.make_new_for_overwrite(                                             \
+							::veg::Tag<__VEG_PP_REMOVE_PAREN(Type)>{},                       \
+							(Rows),                                                          \
+							::ldlt::detail::_align<__VEG_PP_REMOVE_PAREN(Type)>())           \
+					.unwrap();                                                           \
+	auto(Name) /* NOLINT */ = ::Eigen::Map<                                      \
+			::Eigen::Matrix<__VEG_PP_REMOVE_PAREN(Type), ::Eigen::Dynamic, 1>>{      \
+			LDLT_ID(vec_storage).ptr_mut(),                                          \
+			LDLT_ID(vec_storage).len(),                                              \
+	};                                                                           \
+	static_assert(true, ".")
+
+#define LDLT_TEMP_MAT_UNINIT(Type, Name, Rows, Cols, Stack)                    \
+	::veg::isize LDLT_ID(rows) = (Rows);                                         \
+	::veg::isize LDLT_ID(cols) = (Cols);                                         \
+	auto LDLT_ID(vec_storage) =                                                  \
+			(Stack)                                                                  \
+					.make_new_for_overwrite(                                             \
+							::veg::Tag<__VEG_PP_REMOVE_PAREN(Type)>{},                       \
+							::ldlt::detail::_adjusted_stride<__VEG_PP_REMOVE_PAREN(Type)>(   \
+									LDLT_ID(rows)) *                                             \
+									LDLT_ID(cols),                                               \
+							::ldlt::detail::_align<__VEG_PP_REMOVE_PAREN(Type)>())           \
+					.unwrap();                                                           \
+	auto(Name) /* NOLINT */ = ::Eigen::Map<                                      \
+			::Eigen::Matrix<                                                         \
+					__VEG_PP_REMOVE_PAREN(Type),                                         \
+					::Eigen::Dynamic,                                                    \
+					::Eigen::Dynamic,                                                    \
+					::Eigen::ColMajor>,                                                  \
+			::Eigen::Unaligned,                                                      \
+			::Eigen::OuterStride<::Eigen::Dynamic>>{                                 \
+			LDLT_ID(vec_storage).ptr_mut(),                                          \
+			LDLT_ID(rows),                                                           \
+			LDLT_ID(cols),                                                           \
+			::Eigen::OuterStride<::Eigen::Dynamic>{LDLT_ID(rows)},                   \
+	};                                                                           \
+	static_assert(true, ".")
 
 #endif /* end of include guard LDLT_MACROS_HPP_TSAOHJEXS */

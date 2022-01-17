@@ -17,6 +17,25 @@
 namespace ldlt {
 namespace detail {
 
+template <typename T>
+using should_vectorize = std::integral_constant<
+		bool,                           //
+		(std::is_same<T, f32>::value || //
+     std::is_same<T, f64>::value)   //
+		>;
+
+template <typename T>
+auto _adjusted_stride(isize n) noexcept -> isize {
+	isize simd_stride = (SIMDE_NATURAL_VECTOR_SIZE / 8) / isize{alignof(T)};
+	return detail::should_vectorize<T>::value
+	           ? (n + simd_stride - 1) / simd_stride * simd_stride
+	           : n;
+}
+template <typename T>
+auto _align() noexcept -> isize {
+	return isize(alignof(T)) * detail::_adjusted_stride<T>(1);
+}
+
 struct NoCopy {
 	NoCopy() = default;
 	~NoCopy() = default;

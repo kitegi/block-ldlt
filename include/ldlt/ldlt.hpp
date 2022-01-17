@@ -187,11 +187,9 @@ public:
 			Eigen::Ref<Vec const> z,
 			T alpha,
 			veg::dynstack::DynStackMut stack) {
-		VEG_ASSERT(z.rows() == dim());
 		auto n = dim();
-		auto _ = stack.make_new_for_overwrite(veg::Tag<T>{}, n, detail::_align<T>())
-		             .unwrap();
-		auto work = detail::VecMapMut<T>{_.ptr_mut(), n};
+		VEG_ASSERT(z.rows() == n);
+		LDLT_TEMP_VEC_UNINIT(T, work, n, stack);
 
 		for (isize i = 0; i < n; ++i) {
 			work[i] = z[perm[i]];
@@ -289,14 +287,7 @@ public:
 				perm_inv.ptr_mut(),
 				{from_eigen, mat.diagonal()});
 
-		isize work_stride = _adjusted_stride(n);
-		auto _ = stack
-		             .make_new_for_overwrite(
-										 veg::Tag<T>{}, n * work_stride, detail::_align<T>())
-		             .unwrap();
-		auto work =
-				detail::EigenMatMapMut<T, colmajor>{_.ptr_mut(), n, n, work_stride};
-
+		LDLT_TEMP_MAT_UNINIT(T, work, n, n, stack);
 		ld_col_mut() = mat;
 		ldlt::detail::apply_permutation_sym_work<T>( //
 				{from_eigen, ld_col_mut()},
@@ -313,10 +304,7 @@ public:
 	void
 	solve_in_place(Eigen::Ref<Vec> rhs, veg::dynstack::DynStackMut stack) const {
 		isize n = rhs.rows();
-		auto _ =
-				stack.make_new_for_overwrite(veg::Tag<T>{}, dim(), detail::_align<T>())
-						.unwrap();
-		auto work = detail::VecMapMut<T>{_.ptr_mut(), n};
+		LDLT_TEMP_VEC_UNINIT(T, work, n, stack);
 
 		ldlt::detail::apply_perm_rows<T>::fn(
 				work.data(), 0, rhs.data(), 0, n, 1, perm.ptr(), 0);
@@ -388,12 +376,6 @@ public:
 		isize i_actual = n;
 
 		{
-			auto _ =
-					stack
-							.make_new_for_overwrite(veg::Tag<T>{}, n + 1, detail::_align<T>())
-							.unwrap();
-
-			auto permuted_a = detail::VecMapMut<T>{_.ptr_mut(), n + 1};
 
 			for (isize k = 0; k < n; ++k) {
 				auto& p_k = perm[k];
@@ -414,6 +396,7 @@ public:
 
 			auto new_view = LdltViewMut<T>{{from_eigen, ld_col_mut()}};
 
+			LDLT_TEMP_VEC_UNINIT(T, permuted_a, n + 1, stack);
 			for (isize k = 0; k < n + 1; ++k) {
 				permuted_a[k] = a[perm[k]];
 			}

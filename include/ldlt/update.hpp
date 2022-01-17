@@ -95,13 +95,6 @@ LDLT_INLINE void rank1_update_inner_loop(
 }
 
 template <typename T>
-using should_vectorize = std::integral_constant<
-		bool,                           //
-		(std::is_same<T, f32>::value || //
-     std::is_same<T, f64>::value)   //
-		>;
-
-template <typename T>
 LDLT_NO_INLINE void
 rank1_update_clobber_z(LdltViewMut<T> inout, VectorViewMut<T> z, T alpha) {
 
@@ -278,17 +271,6 @@ LDLT_NO_INLINE void row_delete_single(LdltViewMut<T> inout, isize i) {
 LDLT_EXPLICIT_TPL_DECL(3, rank1_update_clobber_z<f32>);
 LDLT_EXPLICIT_TPL_DECL(3, rank1_update_clobber_z<f64>);
 
-template <typename T>
-auto _adjusted_stride(isize n) noexcept -> isize {
-	isize simd_stride = (SIMDE_NATURAL_VECTOR_SIZE / 8) / isize{alignof(T)};
-	return detail::should_vectorize<T>::value
-	           ? (n + simd_stride - 1) / simd_stride * simd_stride
-	           : n;
-}
-template <typename T>
-auto _align() noexcept -> isize {
-	return isize(alignof(T)) * detail::_adjusted_stride<T>(1);
-}
 } // namespace detail
 
 namespace nb {
