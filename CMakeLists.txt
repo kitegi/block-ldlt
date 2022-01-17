@@ -20,21 +20,23 @@ add_library(
   ${CMAKE_CURRENT_SOURCE_DIR}/src/solve.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/update.cpp
 )
-target_include_directories(block-ldlt PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(
+  block-ldlt PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
 
-option(LDLT_TESTS "enable tests" OFF)
+option(BLOCK_LDLT_TESTS "enable tests" OFF)
 
-add_library(project_warnings INTERFACE)
-add_library(project_options INTERFACE)
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/compiler_warnings.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/static_analyzers.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/sanitizers.cmake)
-target_link_libraries(block-ldlt INTERFACE project_options project_warnings)
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/extra_local_settings.cmake)
-enable_sanitizers(project_options)
-set_project_warnings(project_warnings)
+if(BLOCK_LDLT_TESTS)
+  add_library(project_warnings INTERFACE)
+  add_library(project_options INTERFACE)
+  include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/compiler_warnings.cmake)
+  include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/static_analyzers.cmake)
+  include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/sanitizers.cmake)
+  target_link_libraries(block-ldlt INTERFACE project_options project_warnings)
+  include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/extra_local_settings.cmake)
+  enable_sanitizers(project_options)
+  set_project_warnings(project_warnings)
 
-if(LDLT_TESTS)
   include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/conan.cmake)
   # Conan dependencies
   set(CONAN_REQUIRES
@@ -56,7 +58,7 @@ target_include_directories(
   block-ldlt SYSTEM PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/external/simde/
 )
 
-if(LDLT_TESTS)
+if(BLOCK_LDLT_TESTS)
   add_library(ldlt_util STATIC test/src/util_f64.cpp test/src/util_f32.cpp)
   target_include_directories(ldlt_util PUBLIC test/include)
   target_link_libraries(ldlt_util block-ldlt)
