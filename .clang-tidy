@@ -1,0 +1,55 @@
+---
+Checks:          '*,-abseil-*,-fuchsia-*,-google-*,-llvm-*,-zircon-*,-altera-*,
+                  -bugprone-easily-swappable-parameters,
+                  -cert-dcl21-cpp,
+                  -cert-dcl59-cpp,
+                  -clang-diagnostic-c++98-compat-pedantic,
+                  -clang-diagnostic-unused-macros,
+                  -cppcoreguidelines-avoid-c-arrays,
+                  -cppcoreguidelines-avoid-magic-numbers,
+                  -cppcoreguidelines-avoid-non-const-global-variables,
+                  -cppcoreguidelines-c-copy-assignment-signature,
+                  -cppcoreguidelines-macro-usage,
+                  -cppcoreguidelines-no-malloc,
+
+                  -cppcoreguidelines-owning-memory,
+                  # https://github.com/isocpp/CppCoreGuidelines/issues/1589,
+                  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+                  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+                  -cppcoreguidelines-pro-type-const-cast,
+                  -cppcoreguidelines-pro-type-reinterpret-cast,
+                  -cppcoreguidelines-pro-type-union-access,
+                  -cppcoreguidelines-pro-type-vararg,
+
+                  -hicpp-avoid-c-arrays,
+                  -hicpp-explicit-conversions,
+                  -hicpp-member-init,
+                  -hicpp-noexcept-move,
+                  -hicpp-no-array-decay,
+                  -hicpp-no-malloc,
+                  -hicpp-special-member-functions,
+                  -hicpp-vararg,
+                  -llvmlibc-callee-namespace,
+                  -llvmlibc-implementation-in-namespace,
+                  -llvmlibc-restrict-system-libc-headers,
+                  -misc-definitions-in-headers,
+                  -misc-no-recursion,
+                  -misc-unconventional-assign-operator,
+                  -modernize-avoid-c-arrays,
+                  -modernize-concat-nested-namespaces,
+                  -performance-noexcept-move-constructor,
+                  -readability-braces-around-statements,
+                  -readability-convert-member-functions-to-static,
+                  -readability-else-after-return,
+                  -readability-function-cognitive-complexity,
+                  -readability-magic-numbers,
+                  -readability-misleading-indentation,
+                  -readability-named-parameter,
+                  -readability-redundant-declaration,
+                  '
+WarningsAsErrors: ''
+HeaderFilterRegex: ''
+FormatStyle:     none
+CheckOptions:
+  - key:             misc-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic
+    value:           '1'
