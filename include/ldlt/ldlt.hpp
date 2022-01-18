@@ -51,7 +51,7 @@ struct veg::mem::Alloc<ldlt::detail::SimdAlignedSystemAlloc> {
 			void* ptr,
 			Layout l,
 			usize new_size,
-			RelocFn reloc) noexcept {
+			RelocFn reloc) noexcept -> mem::AllocBlock {
 		return Alloc<SystemAlloc>::grow(
 				mut(SystemAlloc{}), ptr, adjusted_layout(l), new_size, reloc);
 	}
@@ -60,7 +60,7 @@ struct veg::mem::Alloc<ldlt::detail::SimdAlignedSystemAlloc> {
 			void* ptr,
 			Layout l,
 			usize new_size,
-			RelocFn reloc) noexcept {
+			RelocFn reloc) noexcept -> mem::AllocBlock {
 		return Alloc<SystemAlloc>::shrink(
 				mut(SystemAlloc{}), ptr, adjusted_layout(l), new_size, reloc);
 	}
