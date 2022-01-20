@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.15)
 
 get_directory_property(has_parent PARENT_DIRECTORY)
 
